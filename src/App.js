@@ -6,7 +6,7 @@ import NewPost from './components/NewPost';
 import PostPage from './components/PostPage';
 import About from './components/About';
 import Missing from './components/Missing';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 function App() {
@@ -37,14 +37,20 @@ function App() {
       body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis consequatur expedita, assumenda similique non optio! Modi nesciunt excepturi corrupti atque blanditiis quo nobis, non optio quae possimus illum exercitationem ipsa!"
     }
   ]);
+
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
-
+  const navigate = useNavigate();
+  const handleDelete = (id) => {
+    const postList = posts.filter(post => post.id !== id);
+    setPosts(postList);
+    navigate('/');
+  }
 
   return (
     <div className="App">
-      <Router>
+
         <Header title="React Fake Blog App"/>
         <Nav search={search} setSearch={setSearch} />
         <Routes>
@@ -52,12 +58,14 @@ function App() {
             <Home posts={posts} />
           } />
           <Route path="/post" element={<NewPost />} />
-          <Route path="/post/:id" element={<PostPage />} />
+          <Route path="/post/:id" element={
+            <PostPage posts={posts} handleDelete={handleDelete} />
+          } />
           <Route path="/about" element={<About />} />
           <Route path="*" element={<Missing />} />
         </Routes>
         <Footer />
-      </Router>
+
     </div>
   );
 }
